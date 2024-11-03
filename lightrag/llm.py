@@ -37,7 +37,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 @retry(
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
+    wait=wait_fixed(10),#wait_exponential(multiplier=1, min=4, max=10),
     retry=retry_if_exception_type((RateLimitError, APIConnectionError, Timeout)),
 )
 async def openai_complete_if_cache(
@@ -133,7 +133,7 @@ class BedrockError(Exception):
 
 @retry(
     stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=1, max=60),
+    wait=wait_fixed(10),#wait_exponential(multiplier=1, max=60),
     retry=retry_if_exception_type((BedrockError)),
 )
 async def bedrock_complete_if_cache(
@@ -497,6 +497,11 @@ async def bedrock_complete(
 ) -> str:
     return await bedrock_complete_if_cache(
         "anthropic.claude-3-haiku-20240307-v1:0",
+        # "meta.llama3-1-405b-instruct-v1:0",
+        #"us.meta.llama3-2-11b-instruct-v1:0",
+        #"us.meta.llama3-2-1b-instruct-v1:0",
+        #"meta.llama3-2-11b-instruct-v1:0",
+        #"us.meta.llama3-2-90b-instruct-v1:0",
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
@@ -533,7 +538,7 @@ async def ollama_model_complete(
 @wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
 @retry(
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=60),
+    wait=wait_fixed(10),#wait_exponential(multiplier=1, min=4, max=60),
     retry=retry_if_exception_type((RateLimitError, APIConnectionError, Timeout)),
 )
 async def openai_embedding(
@@ -557,7 +562,7 @@ async def openai_embedding(
 @wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
 @retry(
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
+    wait=wait_fixed(10),#wait_exponential(multiplier=1, min=4, max=10),
     retry=retry_if_exception_type((RateLimitError, APIConnectionError, Timeout)),
 )
 async def azure_openai_embedding(
